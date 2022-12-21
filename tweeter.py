@@ -18,10 +18,6 @@ api = tweepy.Client(bearer_token)
 
 async def extract_search_criteria(message):
     # Split the message into words
-    if any(word in message.content.lower() for word in sensi_bois):
-        await message.channel.send('Somebody Sensi RN??')
-        
-
     if message.content.startswith("how sensi are people about"):
         # Extract the topic from the message
         topic = message.content[len("how sensi are people about"):].strip()

@@ -40,6 +40,9 @@ async def on_message(message):
     if message.author.bot:
         return
     
+    if 'sensi boi' in message.content.lower() or 'sensiboi' in message.content.lower():
+        await message.channel.send('Somebody Sensi RN??')
+    
     # Extract the topic from the message
     searchCriteria = await tweeter.extract_search_criteria(message)
     await tweeter.extract_search_criteria(message)
