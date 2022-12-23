@@ -1,7 +1,7 @@
 import os
 import discord
 import tweeter
-import statistics
+import sensilyzer
 from textblob import TextBlob
 from nltk import download
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
@@ -51,39 +51,20 @@ async def on_message(message):
     
     # Analyze the sentiment of the tweets using TextBlob and NLTK
     # Combine the scores from TextBlob and NLTK to compute a final sentiment score
-        final_sentiment = [compute_final_sentiment(tweet) for tweet in tweets]
+        combined_sentiments, combined_sentiments_sum, median_sentiment, average_sentiment = sensilyzer.analyze_tweet_sentiments(tweets)
     
     # get median and average
-        median_score = median(final_sentiment)
-    
-        average_score = sum(final_sentiment) / len(final_sentiment)
-        if median_score < 0:
+
+        if median_sentiment < 0:
             language = "negative"
-            await message.reply(f"{searchCriteria} has a {language} score, probably because it sucks. The median sentiment is {median_score} and the average is {average_score}")
-        elif median_score > 0:
+            await message.reply(f"{searchCriteria} has a {language} combined score of {combined_sentiments_sum}, probably because it sucks. The median sentiment is {median_sentiment} and the average is {average_sentiment}")
+        elif median_sentiment > 0:
             language = "positive"
-            await message.reply(f"{searchCriteria} has a {language} score, probably because it's good or people are stupid. The median sentiment is {median_score} and the average is {average_score}")
+            await message.reply(f"{searchCriteria} has a {language} combined score of {combined_sentiments_sum}, probably because it's good or people are stupid. The median sentiment is {median_sentiment} and the average is {average_sentiment}")
         else:
             language = "neutral"
-            await message.reply(f"{searchCriteria} has a {language} score, probably because it's uninteresting or people have better things to do. The median sentiment is {median_score} and the average is {average_score}")
+            await message.reply(f"{searchCriteria} has a {language} combined score of {combined_sentiments_sum}, probably because it's uninteresting or people have better things to do. The median sentiment is {median_sentiment} and the average is {average_sentiment}")
 
-    
-
-def compute_final_sentiment(tweet):
-    sentiment_analyzer = SentimentIntensityAnalyzer()
-    
-    textblob_sentiment = TextBlob(tweet.text).sentiment
-    nltk_sentiment = sentiment_analyzer.polarity_scores(tweet.text)
-        
-    # Combine the polarity and subjectivity scores from TextBlob
-    textblob_score = textblob_sentiment.polarity * textblob_sentiment.subjectivity
-    
-    # Combine the positivity, negativity, and neutrality scores from NLTK
-    nltk_score = nltk_sentiment['pos'] - nltk_sentiment['neg'] - nltk_sentiment['neu']
-    
-    # Return the average of the scores from TextBlob and NLTK as the final sentiment score
-    final_score = (textblob_score + nltk_score) / 2
-    return final_score
 
 
 
